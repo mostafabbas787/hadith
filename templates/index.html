@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="مولد فيديوهات الأحاديث النبوية - أنشئ فيديوهات احترافية للأحاديث الشريفة بسهولة">
+    <meta name="keywords" content="حديث, فيديو, إسلام, أحاديث نبوية, مولد فيديو">
+    <meta name="theme-color" content="#2c5f2d">
+    <meta name="author" content="Hadith Video Generator">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="مولد فيديوهات الأحاديث النبوية">
+    <meta property="og:description" content="أنشئ فيديوهات احترافية للأحاديث الشريفة بسهولة">
+    <meta property="og:image" content="/static/images/og-image.png">
+
+    <title>مولد فيديوهات الأحاديث النبوية | Hadith Video Generator</title>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕌</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="{{ url_for('static', filename='js/app.js') }}" as="script">
+    <link rel="preload" href="{{ url_for('static', filename='js/enhanced-video.js') }}" as="script">
+</head>
+
+<body>
+    <!-- Network Status Indicator -->
+    <div id="networkStatus" class="network-status" role="alert" aria-live="assertive">
+        ⚠️ لا يوجد اتصال بالإنترنت
+    </div>
+
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link">انتقل إلى المحتوى الرئيسي</a>
+
+    <div class="app-wrapper">
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button id="nightModeToggle" class="toolbar-btn" title="الوضع الليلي" aria-label="تبديل الوضع الليلي">
+                <span class="icon">🌙</span>
+            </button>
+            <button id="favoritesBtn" class="toolbar-btn" title="المفضلة" aria-label="عرض المفضلة">
+                <span class="icon">❤️</span>
+            </button>
+            <button id="helpBtn" class="toolbar-btn" title="المساعدة" aria-label="المساعدة">
+                <span class="icon">❓</span>
+            </button>
+        </div>
+
+        <div class="container" id="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-content">
+                    <div class="logo-section">
+                        <span class="logo-icon pulse-animation">🕌</span>
+                        <div class="title-section">
+                            <h1>مولد فيديوهات الأحاديث النبوية</h1>
+                            <p class="subtitle">أنشئ فيديوهات قصيرة احترافية للأحاديث الشريفة بسهولة</p>
+                        </div>
+                    </div>
+                    <div class="header-stats" id="headerStats">
+                        <div class="stat-item">
+                            <span class="stat-value" id="totalVideos">0</span>
+                            <span class="stat-label">فيديو</span>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="aiStatusCount">--</span>
+                            <span class="stat-label">خدمات AI</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Search Section -->
+            <section class="search-section" aria-labelledby="search-heading">
+                <h2 id="search-heading" class="visually-hidden">البحث عن الأحاديث</h2>
+
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <span class="search-icon-left">🔍</span>
+                        <input type="text" id="searchInput" class="search-input"
+                            placeholder="ابحث عن الحديث (مثال: الصلاة، الزكاة، الصدق...)" autocomplete="off"
+                            aria-label="البحث عن الأحاديث">
+                        <button id="clearSearchBtn" class="clear-search-btn" title="مسح البحث" style="display: none;"
+                            aria-label="مسح البحث">✕</button>
+                    </div>
+                    <button id="searchBtn" class="btn btn-primary btn-search">
+                        <span class="btn-icon">🔍</span>
+                        <span class="btn-text">بحث</span>
+                    </button>
+                </div>
+
+                <!-- Quick Search Tags -->
+                <div class="quick-search-tags">
+                    <span class="tags-label">🏷️ بحث سريع:</span>
+                    <button class="quick-tag" data-search="الصلاة">الصلاة</button>
+                    <button class="quick-tag" data-search="الصدق">الصدق</button>
+                    <button class="quick-tag" data-search="الرحمة">الرحمة</button>
+                    <button class="quick-tag" data-search="الجنة">الجنة</button>
+                    <button class="quick-tag" data-search="الصبر">الصبر</button>
+                    <button class="quick-tag" data-search="الإحسان">الإحسان</button>
+                </div>
+
+                <!-- Video Type Selection -->
+                <div class="video-type-section">
+                    <label class="video-type-label">🎬 نوع الفيديو الخلفي:</label>
+                    <div class="video-type-options">
+                        <label class="radio-option" data-tooltip="خلفية طبيعية هادئة">
+                            <input type="radio" name="videoType" value="nature calm" checked>
+                            <span class="radio-content">
+                                <span class="radio-icon">🌿</span>
+                                <span class="radio-text">طبيعة</span>
+                            </span>
+                        </label>
+                        <label class="radio-option" data-tooltip="مناظر جبلية">
+                            <input type="radio" name="videoType" value="mountains peaceful">
+                            <span class="radio-content">
+                                <span class="radio-icon">⛰️</span>
+                                <span class="radio-text">جبال</span>
+                            </span>
+                        </label>
+                        <label class="radio-option" data-tooltip="أمواج البحر">
+                            <input type="radio" name="videoType" value="ocean sunset">
+                            <span class="radio-content">
+                                <span class="radio-icon">🌊</span>
+                                <span class="radio-text">بحر</span>
+                            </span>
+                        </label>
+                        <label class="radio-option" data-tooltip="صحراء ذهبية">
+                            <input type="radio" name="videoType" value="desert landscape">
+                            <span class="radio-content">
+                                <span class="radio-icon">🏜️</span>
+                                <span class="radio-text">صحراء</span>
+                            </span>
+                        </label>
+                        <label class="radio-option" data-tooltip="زخارف إسلامية">
+                            <input type="radio" name="videoType" value="islamic">
+                            <span class="radio-content">
+                                <span class="radio-icon">🕌</span>
+                                <span class="radio-text">إسلامي</span>
+                            </span>
+                        </label>
+                        <label class="radio-option" data-tooltip="سماء ونجوم">
+                            <input type="radio" name="videoType" value="sky stars">
+                            <span class="radio-content">
+                                <span class="radio-icon">⭐</span>
+                                <span class="radio-text">سماء</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Advanced Options Toggle -->
+                <div class="advanced-options-section">
+                    <button type="button" id="toggleAdvancedBtn" class="btn btn-outline toggle-advanced"
+                        aria-expanded="false" aria-controls="advancedOptions">
+                        <span class="toggle-icon">⚙️</span>
+                        <span class="toggle-text">خيارات متقدمة</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+
+                    <div id="advancedOptions" class="advanced-options" style="display: none;" role="region"
+                        aria-labelledby="toggleAdvancedBtn">
+                        <!-- Tabs Navigation -->
+                        <div class="options-tabs" role="tablist">
+                            <button class="tab-btn active" data-tab="audio-tab" role="tab" aria-selected="true">🎤
+                                الصوت</button>
+                            <button class="tab-btn" data-tab="image-tab" role="tab" aria-selected="false">🖼️
+                                الصور</button>
+                            <button class="tab-btn" data-tab="video-tab" role="tab" aria-selected="false">🎬
+                                الفيديو</button>
+                            <button class="tab-btn" data-tab="ai-tab" role="tab" aria-selected="false">🤖 AI</button>
+                            <button class="tab-btn" data-tab="status-tab" role="tab" aria-selected="false">📡
+                                الحالة</button>
+                        </div>
+
+                        <!-- Audio Tab -->
+                        <div class="tab-content active" id="audio-tab" role="tabpanel">
+                            <div class="option-group">
+                                <h4><span class="option-icon">🎤</span> خيارات الصوت</h4>
+                                <div class="options-grid">
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="useElevenLabs" name="useElevenLabs">
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-label">استخدام ElevenLabs (صوت احترافي)</span>
+                                        <span class="option-badge premium">Premium</span>
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="enhanceAudio" name="enhanceAudio" checked>
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-label">تحسين الصوت محلياً (إزالة الضوضاء)</span>
+                                        <span class="option-badge free">مجاني</span>
+                                    </label>
+                                </div>
+                                <div class="select-row">
+                                    <div class="select-group">
+                                        <label for="voiceSelect"><span class="select-icon">🗣️</span> صوت
+                                            القراءة:</label>
+                                        <select id="voiceSelect" class="form-select">
+                                            <optgroup label="أصوات ذكورية">
+                                                <option value="ar-SA-HamedNeural">🇸🇦 حامد (سعودي)</option>
+                                                <option value="ar-EG-ShakirNeural">🇪🇬 شاكر (مصري)</option>
+                                                <option value="ar-AE-HamdanNeural">🇦🇪 حمدان (إماراتي)</option>
+                                            </optgroup>
+                                            <optgroup label="أصوات نسائية">
+                                                <option value="ar-SA-ZariyahNeural">🇸🇦 زارية (سعودية)</option>
+                                                <option value="ar-EG-SalmaNeural">🇪🇬 سلمى (مصرية)</option>
+                                                <option value="ar-AE-FatimaNeural">🇦🇪 فاطمة (إماراتية)</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+                                    <div class="select-group">
+                                        <label for="speechSpeed"><span class="select-icon">⏱️</span> سرعة
+                                            القراءة:</label>
+                                        <select id="speechSpeed" class="form-select">
+                                            <option value="0.8">بطيء</option>
+                                            <option value="1.0" selected>عادي</option>
+                                            <option value="1.2">سريع</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Tab -->
+                        <div class="tab-content" id="image-tab" role="tabpanel">
+                            <div class="option-group">
+                                <h4><span class="option-icon">🖼️</span> توليد الصور بالذكاء الاصطناعي</h4>
+                                <label class="checkbox-option">
+                                    <input type="checkbox" id="useAIBackground" name="useAIBackground">
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-label">توليد خلفية بالذكاء الاصطناعي</span>
+                                    <span class="option-badge ai">AI</span>
+                                </label>
+                                <div class="select-row">
+                                    <div class="select-group">
+                                        <label for="imageProviderSelect"><span class="select-icon">🎨</span> مزود
+                                            الصور:</label>
+                                        <select id="imageProviderSelect" class="form-select">
+                                            <option value="openai">🤖 OpenAI DALL-E 3</option>
+                                            <option value="stability">🎨 Stability AI</option>
+                                            <option value="gemini">✨ Google Gemini</option>
+                                            <option value="openrouter">🔀 OpenRouter</option>
+                                        </select>
+                                    </div>
+                                    <div class="select-group">
+                                        <label for="imageQuality"><span class="select-icon">📐</span> جودة
+                                            الصورة:</label>
+                                        <select id="imageQuality" class="form-select">
+                                            <option value="standard">قياسية (1024x1024)</option>
+                                            <option value="hd" selected>عالية (1792x1024)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video Tab -->
+                        <div class="tab-content" id="video-tab" role="tabpanel">
+                            <div class="option-group">
+                                <h4><span class="option-icon">🎬</span> خيارات الفيديو</h4>
+                                <div class="options-grid">
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="useAIVideo" name="useAIVideo">
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-label">توليد فيديو بالذكاء الاصطناعي</span>
+                                        <span class="option-badge ai">AI</span>
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="useLocalVideo" name="useLocalVideo" checked>
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-label">فيديو محلي من الصور (Ken Burns)</span>
+                                        <span class="option-badge free">مجاني</span>
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="useMultipleImages" name="useMultipleImages">
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-label">توليد صور متعددة وتحويلها لفيديو</span>
+                                    </label>
+                                </div>
+                                <div class="select-row">
+                                    <div class="select-group">
+                                        <label for="videoProviderSelect"><span class="select-icon">🎥</span> مزود
+                                            الفيديو:</label>
+                                        <select id="videoProviderSelect" class="form-select">
+                                            <option value="local">🖥️ محلي (Ken Burns)</option>
+                                            <option value="runway">🎬 Runway ML</option>
+                                            <option value="pika">🎪 Pika Labs</option>
+                                            <option value="kling">🎭 Kling AI</option>
+                                            <option value="veo">🌐 Google Veo</option>
+                                            <option value="replicate">🔄 Replicate</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="select-row">
+                                    <div class="select-group">
+                                        <label for="imageCountSelect">عدد الصور:</label>
+                                        <select id="imageCountSelect" class="form-select">
+                                            <option value="3">3 صور</option>
+                                            <option value="5" selected>5 صور</option>
+                                            <option value="7">7 صور</option>
+                                            <option value="10">10 صور</option>
+                                        </select>
+                                    </div>
+                                    <div class="select-group">
+                                        <label for="imageDurationSelect">مدة كل صورة:</label>
+                                        <select id="imageDurationSelect" class="form-select">
+                                            <option value="2">2 ثانية</option>
+                                            <option value="3" selected>3 ثوان</option>
+                                            <option value="5">5 ثوان</option>
+                                            <option value="7">7 ثوان</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="option-group">
+                                <h4><span class="option-icon">✨</span> تأثيرات الفيديو</h4>
+                                <div class="effects-grid">
+                                    <label class="checkbox-option effect-option">
+                                        <input type="checkbox" id="enhanceVideo" name="enhanceVideo" checked>
+                                        <span class="checkbox-custom"></span>
+                                        <span class="effect-content">
+                                            <span class="effect-icon">🎨</span>
+                                            <span class="effect-name">تحسين الألوان</span>
+                                        </span>
+                                    </label>
+                                    <label class="checkbox-option effect-option">
+                                        <input type="checkbox" id="kenBurnsEffect" name="kenBurnsEffect" checked>
+                                        <span class="checkbox-custom"></span>
+                                        <span class="effect-content">
+                                            <span class="effect-icon">🔍</span>
+                                            <span class="effect-name">Ken Burns</span>
+                                        </span>
+                                    </label>
+                                    <label class="checkbox-option effect-option">
+                                        <input type="checkbox" id="vignetteEffect" name="vignetteEffect" checked>
+                                        <span class="checkbox-custom"></span>
+                                        <span class="effect-content">
+                                            <span class="effect-icon">🌑</span>
+                                            <span class="effect-name">تظليل دائري</span>
+                                        </span>
+                                    </label>
+                                    <label class="checkbox-option effect-option">
+                                        <input type="checkbox" id="filmGrainEffect" name="filmGrainEffect">
+                                        <span class="checkbox-custom"></span>
+                                        <span class="effect-content">
+                                            <span class="effect-icon">📽️</span>
+                                            <span class="effect-name">تحبب سينمائي</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Tab -->
+                        <div class="tab-content" id="ai-tab" role="tabpanel">
+                            <div class="option-group">
+                                <h4><span class="option-icon">🤖</span> توليد الأوامر بالذكاء الاصطناعي</h4>
+                                <div class="select-group">
+                                    <label for="promptProviderSelect"><span class="select-icon">🧠</span> مزود توليد
+                                        الأوامر:</label>
+                                    <select id="promptProviderSelect" class="form-select">
+                                        <option value="local">📝 محلي (قوالب جاهزة)</option>
+                                        <option value="gemini">✨ Google Gemini</option>
+                                        <option value="openrouter">🔀 OpenRouter</option>
+                                        <option value="ollama">🦙 Ollama (محلي)</option>
+                                    </select>
+                                </div>
+                                <div class="prompt-generator">
+                                    <div class="prompt-buttons">
+                                        <button type="button" id="generatePromptBtn" class="btn btn-secondary">
+                                            <span class="btn-icon">📝</span>
+                                            <span class="btn-text">توليد أمر تلقائي</span>
+                                        </button>
+                                        <button type="button" id="generateAIPromptBtn" class="btn btn-ai">
+                                            <span class="btn-icon">✨</span>
+                                            <span class="btn-text">توليد بالذكاء الاصطناعي</span>
+                                        </button>
+                                    </div>
+                                    <textarea id="customPrompt" class="form-textarea" rows="4"
+                                        placeholder="يمكنك كتابة وصف مخصص للخلفية هنا أو استخدام الأزرار لتوليد وصف تلقائياً..."
+                                        aria-label="وصف مخصص للخلفية"></textarea>
+                                    <div class="prompt-templates">
+                                        <span class="templates-label">قوالب سريعة:</span>
+                                        <button type="button" class="template-btn"
+                                            data-template="مسجد إسلامي فخم مع إضاءة ذهبية دافئة وزخارف عربية">🕌
+                                            مسجد</button>
+                                        <button type="button" class="template-btn"
+                                            data-template="طبيعة خضراء هادئة مع أشعة الشمس الذهبية">🌿 طبيعة</button>
+                                        <button type="button" class="template-btn"
+                                            data-template="سماء ليلية مرصعة بالنجوم والمجرات">⭐ سماء</button>
+                                        <button type="button" class="template-btn"
+                                            data-template="صحراء ذهبية جميلة عند الغروب">🏜️ صحراء</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Tab -->
+                        <div class="tab-content" id="status-tab" role="tabpanel">
+                            <div class="option-group api-status-group">
+                                <h4><span class="option-icon">📡</span> حالة خدمات AI</h4>
+                                <div id="apiStatus" class="api-status">
+                                    <div class="status-category">
+                                        <div class="status-header">
+                                            <span class="status-cat-icon">🎤</span>
+                                            <strong>الصوت</strong>
+                                        </div>
+                                        <div class="status-items">
+                                            <span class="status-item" id="statusElevenlabs">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">ElevenLabs</span>
+                                            </span>
+                                            <span class="status-item active" id="statusEdgeTTS">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">Edge TTS</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="status-category">
+                                        <div class="status-header">
+                                            <span class="status-cat-icon">🖼️</span>
+                                            <strong>الصور</strong>
+                                        </div>
+                                        <div class="status-items">
+                                            <span class="status-item" id="statusOpenai">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">OpenAI</span>
+                                            </span>
+                                            <span class="status-item" id="statusStability">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">Stability</span>
+                                            </span>
+                                            <span class="status-item" id="statusGemini">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">Gemini</span>
+                                            </span>
+                                            <span class="status-item" id="statusOpenrouter">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">OpenRouter</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="status-category">
+                                        <div class="status-header">
+                                            <span class="status-cat-icon">🎬</span>
+                                            <strong>الفيديو</strong>
+                                        </div>
+                                        <div class="status-items">
+                                            <span class="status-item" id="statusVideoGen">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">Video API</span>
+                                            </span>
+                                            <span class="status-item" id="statusKling">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">Kling</span>
+                                            </span>
+                                            <span class="status-item" id="statusVeo">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">Veo</span>
+                                            </span>
+                                            <span class="status-item active" id="statusLocalVideo">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">Local</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="status-category">
+                                        <div class="status-header">
+                                            <span class="status-cat-icon">🔧</span>
+                                            <strong>المحلي</strong>
+                                        </div>
+                                        <div class="status-items">
+                                            <span class="status-item active" id="statusAudioEnhancer">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">Audio</span>
+                                            </span>
+                                            <span class="status-item active" id="statusVideoEnhancer">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">Video</span>
+                                            </span>
+                                            <span class="status-item" id="statusOllama">
+                                                <span class="status-dot"></span>
+                                                <span class="status-name">Ollama</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" id="refreshStatusBtn" class="btn btn-small btn-refresh">
+                                    <span class="btn-icon">🔄</span>
+                                    <span class="btn-text">تحديث الحالة</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;"
+                aria-labelledby="results-heading">
+                <div class="section-header">
+                    <h2 id="results-heading" class="section-title">📚 نتائج البحث</h2>
+                    <span class="results-count" id="resultsCount"></span>
+                </div>
+                <div id="resultsList" class="results-list"></div>
+            </section>
+
+            <!-- Progress Section -->
+            <section class="progress-section" id="progressSection" style="display: none;"
+                aria-labelledby="progress-heading" aria-live="polite">
+                <h2 id="progress-heading" class="section-title">🔄 جاري إنشاء الفيديو...</h2>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div id="progressBarFill" class="progress-bar-fill" role="progressbar" aria-valuenow="0"
+                            aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <p id="progressText" class="progress-text">جاري المعالجة...</p>
+                    <p id="progressDetail" class="progress-detail"></p>
+                </div>
+                <div class="progress-steps">
+                    <div class="step" id="step1">
+                        <div class="step-icon">
+                            <span class="step-number">1</span>
+                            <span class="step-check">✓</span>
+                        </div>
+                        <div class="step-label">جلب البيانات</div>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-icon">
+                            <span class="step-number">2</span>
+                            <span class="step-check">✓</span>
+                        </div>
+                        <div class="step-label">توليد الصوت</div>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-icon">
+                            <span class="step-number">3</span>
+                            <span class="step-check">✓</span>
+                        </div>
+                        <div class="step-label">تحميل الفيديو</div>
+                    </div>
+                    <div class="step" id="step4">
+                        <div class="step-icon">
+                            <span class="step-number">4</span>
+                            <span class="step-check">✓</span>
+                        </div>
+                        <div class="step-label">دمج المكونات</div>
+                    </div>
+                </div>
+                <button type="button" id="cancelGenerationBtn" class="btn btn-danger btn-cancel"
+                    style="margin-top: 20px;">
+                    <span class="btn-icon">✕</span>
+                    <span class="btn-text">إلغاء</span>
+                </button>
+            </section>
+
+            <!-- Preview Section -->
+            <section class="preview-section" id="previewSection" style="display: none;"
+                aria-labelledby="preview-heading">
+                <div class="section-header">
+                    <h2 id="preview-heading" class="section-title">🎬 الفيديو النهائي</h2>
+                    <span class="success-badge">✅ تم الإنشاء بنجاح</span>
+                </div>
+                <div class="video-container">
+                    <video id="videoPreview" controls class="video-player" preload="metadata">
+                        متصفحك لا يدعم عرض الفيديو
+                    </video>
+                </div>
+                <div class="video-info" id="videoInfo">
+                    <div class="info-item">
+                        <span class="info-icon">⏱️</span>
+                        <span class="info-label">المدة:</span>
+                        <span class="info-value" id="videoDuration">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">📐</span>
+                        <span class="info-label">الدقة:</span>
+                        <span class="info-value" id="videoResolution">1080p</span>
+                    </div>
+                </div>
+                <div class="video-actions">
+                    <button id="downloadBtn" class="btn btn-success btn-lg">
+                        <span class="btn-icon">⬇️</span>
+                        <span class="btn-text">تحميل الفيديو</span>
+                    </button>
+                    <button id="shareBtn" class="btn btn-secondary">
+                        <span class="btn-icon">📤</span>
+                        <span class="btn-text">مشاركة</span>
+                    </button>
+                    <button id="newVideoBtn" class="btn btn-outline">
+                        <span class="btn-icon">🔄</span>
+                        <span class="btn-text">إنشاء فيديو جديد</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Loading Overlay -->
+            <div id="loadingOverlay" class="loading-overlay" style="display: none;" role="alert" aria-busy="true">
+                <div class="loader-container">
+                    <div class="loader">
+                        <div class="loader-ring"></div>
+                        <div class="loader-ring"></div>
+                        <span class="loader-icon">🕌</span>
+                    </div>
+                    <p class="loading-text" id="loadingText">جاري المعالجة...</p>
+                </div>
+            </div>
+
+            <!-- Toast Container -->
+            <div id="toastContainer" class="toast-container"></div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="error-message" style="display: none;" role="alert"></div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-logo">🕌</span>
+                    <span class="footer-title">مولد فيديوهات الأحاديث النبوية</span>
+                </div>
+                <p class="footer-copyright">© 2026 جميع الحقوق محفوظة</p>
+                <p class="footer-tech">
+                    تم التطوير باستخدام
+                    <span class="tech-badge">Flask</span>
+                    <span class="tech-badge">MoviePy</span>
+                    <span class="tech-badge">AI APIs</span>
+                </p>
+                <div class="footer-links">
+                    <button id="showFavoritesBtn" class="footer-link">❤️ المفضلة</button>
+                    <button id="showHistoryBtn" class="footer-link">📜 السجل</button>
+                    <button id="exportDataBtn" class="footer-link">📤 تصدير البيانات</button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Favorites Modal -->
+    <div id="favoritesModal" class="modal" style="display: none;" role="dialog" aria-labelledby="favorites-modal-title"
+        aria-modal="true">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="favorites-modal-title">❤️ الأحاديث المفضلة</h3>
+                <button class="modal-close" id="closeFavoritesModal" aria-label="إغلاق">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="favoritesList" class="favorites-list">
+                    <p class="empty-favorites">لا توجد أحاديث مفضلة بعد</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal" style="display: none;" role="dialog" aria-labelledby="help-modal-title"
+        aria-modal="true">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="help-modal-title">❓ دليل الاستخدام</h3>
+                <button class="modal-close" id="closeHelpModal" aria-label="إغلاق">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h4>🔍 كيفية البحث</h4>
+                    <p>أدخل كلمة مفتاحية في حقل البحث (مثل: الصلاة، الصدق، الرحمة) وسيتم عرض الأحاديث المتعلقة من قاعدة
+                        بيانات الدرر السنية.</p>
+                </div>
+                <div class="help-section">
+                    <h4>🎬 إنشاء فيديو</h4>
+                    <p>بعد البحث، اختر الحديث المناسب ثم اضغط على زر "إنشاء فيديو". يمكنك اختيار نوع الخلفية من القائمة
+                        المتاحة.</p>
+                </div>
+                <div class="help-section">
+                    <h4>⚙️ الخيارات المتقدمة</h4>
+                    <p>يمكنك تخصيص الصوت والفيديو والتأثيرات من خلال قسم الخيارات المتقدمة. تتضمن خيارات AI لتوليد صور
+                        وفيديو احترافي.</p>
+                </div>
+                <div class="help-section">
+                    <h4>❤️ المفضلة</h4>
+                    <p>يمكنك حفظ الأحاديث المفضلة لديك للرجوع إليها لاحقاً. اضغط على زر القلب لإضافة حديث للمفضلة.</p>
+                </div>
+                <div class="help-section">
+                    <h4>💡 نصائح</h4>
+                    <ul>
+                        <li>استخدم كلمات بحث واضحة للحصول على نتائج أفضل</li>
+                        <li>جرب أنواع خلفيات مختلفة لتجد المناسب</li>
+                        <li>فعّل تحسين الصوت للحصول على جودة أفضل</li>
+                        <li>احفظ الأحاديث المهمة في المفضلة</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4>⌨️ اختصارات لوحة المفاتيح</h4>
+                    <ul>
+                        <li><kbd>Ctrl</kbd> + <kbd>K</kbd> - التركيز على البحث</li>
+                        <li><kbd>Ctrl</kbd> + <kbd>/</kbd> - فتح/إغلاق المساعدة</li>
+                        <li><kbd>Ctrl</kbd> + <kbd>F</kbd> - فتح المفضلة</li>
+                        <li><kbd>N</kbd> - تبديل الوضع الليلي</li>
+                        <li><kbd>D</kbd> - تحميل الفيديو</li>
+                        <li><kbd>Esc</kbd> - إغلاق النوافذ</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollTopBtn" class="scroll-top-btn" title="العودة للأعلى" aria-label="العودة لأعلى الصفحة"
+        style="display: none;">
+        <span>⬆️</span>
+    </button>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/enhanced-video.js') }}"></script>
+</body>
+
+</html>
